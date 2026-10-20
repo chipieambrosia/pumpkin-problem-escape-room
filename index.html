@@ -341,6 +341,15 @@ main{grid-template-rows:165px minmax(400px,65vh) 330px auto!important}
 .help-answer-switch input{width:21px;height:21px;accent-color:#ec8d19}
 .help-answer{font-size:24px;font-weight:bold;text-align:center;color:#ffe09b;background:#5a351a;border:1px solid #e9a346;padding:15px;border-radius:8px;letter-spacing:2px}
 .help-second-button{display:block;margin:14px 0;padding:11px 22px;border:1px solid #ffbb59;border-radius:10px;background:linear-gradient(135deg,#a04a10,#5c2b0c);color:#fff0d1;font-weight:800;font-size:16px;cursor:pointer}.help-second-button:hover{filter:brightness(1.25)}
+
+/* FIX: modal galleries always sit above the center card placeholder. */
+#overlay.overlay.show, #drawOverlay.overlay.show {
+  position:fixed!important; inset:0!important; z-index:10000!important;
+  isolation:isolate!important;
+}
+#overlay .modal, #drawOverlay .modal {position:relative!important;z-index:1!important}
+body:has(#overlay.show) #selectedPreview,
+body:has(#drawOverlay.show) #selectedPreview {visibility:hidden!important;pointer-events:none!important}
 </style>
 </head>
 <body>
