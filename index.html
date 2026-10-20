@@ -58,7 +58,7 @@ h2{margin:0 0 10px;font-size:17px;color:inherit}
 .hint{font-size:13px;opacity:.88}
 .discard-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .selected-preview{position:absolute;z-index:12;left:16%;top:6px;width:68%;height:min(98%,860px);min-height:520px;background:linear-gradient(135deg,#4a3525,#251b16);border:2px solid #c49c67;border-radius:14px;box-shadow:0 12px 32px #0008;padding:18px 18px 14px;overflow:auto}
-.selected-preview.above-discard{z-index:30}
+.selected-preview.above-discard{z-index:12}
 .selected-preview[hidden]{display:none}
 .preview-close{position:absolute;top:8px;right:8px;border-radius:999px;padding:4px 9px;font-size:14px}
 #previewContent{min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding-top:18px}
@@ -475,7 +475,7 @@ function cardEl(id,source,index,preview=false,face='front'){
   const tag=document.createElement('div'); tag.className='numtag'; tag.textContent='#'+id; el.append(tag);
   const img=makeCardImage(face==='back'?c.back:c.front,'Card '+id+' '+(face==='back'?'back':'front')); img.className='card-thumb'; el.append(img);
   if(preview){ const t=document.createElement('div'); t.className='preview-hint'; t.textContent=face==='front'?'Front':'Back'; el.append(t); return el; }
-  el.onclick=()=>{selected={source,index,id,face:'front'}; renderFocus()};
+  el.onclick=()=>{if(source==='discard')$('overlay').classList.remove('show'); selected={source,index,id,face:'front'}; renderFocus()};
   el.draggable=true;
   el.ondragstart=e=>{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',JSON.stringify({source,index,id})); selected={source,index,id,face:'front'}};
   if(source==='hand' || source==='board'){
@@ -573,7 +573,7 @@ function renderFocus(){
   f.textContent='Click a card to view it.'; content.innerHTML='';
   if(!selected){ panel.hidden=true; panel.classList.remove('above-discard'); return; }
   const c=card(selected.id); if(!c){ selected=null; panel.hidden=true; panel.classList.remove('above-discard'); return; }
-  panel.hidden=false; panel.classList.toggle('above-discard',$('overlay').classList.contains('show'));
+  panel.hidden=false; panel.classList.remove('above-discard');
   const wrap=document.createElement('div'); wrap.className='focuswrap';
   const big=document.createElement('div');big.className='bigcard';
  const imageWrap=document.createElement('div');imageWrap.className='art-wrap';
@@ -657,7 +657,7 @@ function renderNotes(){
 function renderDiscard(){ const d=$('discardGrid'); d.innerHTML=''; s.discard.forEach((id,i)=>d.append(cardEl(id,'discard',i))); }
 $('boardToggle').onclick=()=>{const area=document.querySelector('.tablearea');area.classList.toggle('collapsed');$('boardToggle').textContent=area.classList.contains('collapsed')?'▸ Show':'▾ Hide';};
 $('draw').onclick=openDraw; $('drawClose').onclick=()=>$('drawOverlay').classList.remove('show'); $('drawOverlay').onclick=e=>{if(e.target===$('drawOverlay'))$('drawOverlay').classList.remove('show')};
-$('discardOpen').onclick=()=>{ $('overlay').classList.add('show'); renderDiscard(); renderFocus(); };
+$('discardOpen').onclick=()=>{ selected=null; renderFocus(); $('overlay').classList.add('show'); renderDiscard(); };
 $('close').onclick=()=>{ $('overlay').classList.remove('show'); renderFocus(); };
 $('overlay').onclick=e=>{ if(e.target===$('overlay')){ $('overlay').classList.remove('show'); renderFocus(); } };
 $('next').onclick=()=>{ s.page++; s.notes[s.page]??=Array(5).fill(''); renderNotes(); };
